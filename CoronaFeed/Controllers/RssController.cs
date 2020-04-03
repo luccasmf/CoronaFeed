@@ -27,7 +27,7 @@ namespace CoronaFeed.Controllers
             //_urls.Add(@"");
         }
 
-        [ResponseCache(Duration = 5)] //cache de meia hora antes de buscar denovo novas notícias
+        [ResponseCache(Duration = 1800)] //cache de meia hora antes de buscar denovo novas notícias
         [HttpGet]
         public IActionResult GetRSS()
         {
@@ -47,16 +47,8 @@ namespace CoronaFeed.Controllers
             Task t = Task.WhenAll(tasks);
 
             t.Wait();
-            //var postings = GetFeedResults();
-            //foreach (var item in _postings)
-            //{
-            //    //var postUrl = Url.Action("Article", "Blog", new { id = item.BaseUri }, HttpContext.Request.Scheme);
-            //    //var title = item.Title;
-            //    //var description = item.de;
-            //    //items.Add(new SyndicationItem(title, description, new Uri(postUrl), item.BaseUri, item.PostDate));
+            
 
-            //    items.Add(item);
-            //}
             feed.Items = _postings;
 
 
@@ -86,9 +78,12 @@ namespace CoronaFeed.Controllers
         {
             try
             {
-                using var reader = XmlReader.Create(url);
+                var reader = XmlReader.Create(url);
                 var feed = SyndicationFeed.Load(reader);
-                _postings.AddRange(feed.Items.Where(x => x.Title.Text.ToLower().Contains("covid") || x.Title.Text.ToLower().Contains("corona")));
+               
+                _postings.AddRange(feed.Items.Where(
+                    x => x.Title.Text.HasKeywords() ||
+                    x.Id.HasKeywords()));
             }
             //string[] filtro = new string[] { "Covid", "covid", "Corona", "corona" };
             catch

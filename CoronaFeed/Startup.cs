@@ -39,9 +39,8 @@ namespace CoronaFeed
                 c.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
-                        Title = "Indicadores Econômicos",
-                        Version = "v1",
-                        Description = "Exemplo de API REST criada com o ASP.NET Core 2.2 para consulta a indicadores econômicos",
+                        Title = "Corona Feed",
+                        Version = "v1"
                         
                     });
             });
