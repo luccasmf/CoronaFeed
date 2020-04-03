@@ -19,41 +19,38 @@ namespace CoronaFeed.Controllers
     {
         private List<SyndicationItem> _postings;
         private readonly List<string> _urls;
-        public RssController(List<string> urls)
+        public RssController(List<string> urls) //recebe a lista de urls do appsettings, adicionada ao serviço da aplicaçao
         {
             _urls = urls;
-            //_urls = new List<string>();
-            //_urls.Add(@"");
-            //_urls.Add(@"");
         }
 
         [ResponseCache(Duration = 1800)] //cache de meia hora antes de buscar denovo novas notícias
         [HttpGet]
         public IActionResult GetRSS()
         {
+            //configura o Feed
             _postings = new List<SyndicationItem>();
             var feed = new SyndicationFeed("CoronaFeed", "Feed para centralização de notícias sobre o ", new Uri("https://github.com/luccasmf/CoronaFeed"), "RSSUrl", DateTime.Now);
             feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year}");
 
             var items = new List<SyndicationItem>();
-
             var tasks = new List<Task>();
 
+            //enfileira tasks para rodar todas ao mesmo tempo
             foreach (string feedUrl in _urls)
             {
                 tasks.Add(Task.Run(() => ReadRSS(feedUrl)));
             }
-
             Task t = Task.WhenAll(tasks);
-
             t.Wait();
             
-
+            //ao terminar de adicionar todos os feeds, atribui ao feed criado
             feed.Items = _postings;
 
-
+            //ordena feed e tira duplicados
             feed.Items = feed.Items.DistinctBy(x => x.Title.Text).OrderByDescending(x => x.PublishDate).ToList();
 
+            //formata para XML
             var settings = new XmlWriterSettings
             {
                 Encoding = Encoding.UTF8,
@@ -73,7 +70,7 @@ namespace CoronaFeed.Controllers
             }
         }
 
-
+        //le os RSS
         private async void ReadRSS(string url)
         {
             try

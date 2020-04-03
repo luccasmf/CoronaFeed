@@ -9,8 +9,8 @@ namespace CoronaFeed
     {
         public static bool HasKeywords(this string text)
         {
-            string[] keywords = new string[] { "corona", "covid", "pandemia" };
-
+            //adicionar palavras chave aqui sempre em minusculo
+            string[] keywords = new string[] { "corona", "covid", "pandemia", "isolamento" };
 
 
             foreach (var key in keywords)
