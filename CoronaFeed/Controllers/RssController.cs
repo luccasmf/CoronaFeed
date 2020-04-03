@@ -10,6 +10,8 @@ using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoreLinq;
+using HtmlAgilityPack;
+using System.Net.Http;
 
 namespace CoronaFeed.Controllers
 {
@@ -88,6 +90,27 @@ namespace CoronaFeed.Controllers
 
             }
             
+        }
+
+        [HttpGet("Tracker")]
+        public async Task<string> Tracker()
+        {
+            
+
+            var date = DateTime.Now;
+            var url = $"https://bnonews.com/index.php/{date.Year}/{date.Month.ToString("00")}/the-latest-coronavirus-cases/";
+            var xpath = "//*[@id=\"0\"]/div/table/tbody";
+
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            var pageContents = await response.Content.ReadAsStringAsync();
+
+            var pageDocument = new HtmlDocument();
+            pageDocument.LoadHtml(pageContents);
+
+            var tableCases = pageDocument.DocumentNode.SelectSingleNode(xpath).InnerText;
+            //Console.WriteLine(tableCases);
+            return tableCases;
         }
     }
 }
