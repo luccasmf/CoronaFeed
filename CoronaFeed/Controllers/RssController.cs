@@ -30,8 +30,8 @@ namespace CoronaFeed.Controllers
         {
             //configura o Feed
             _postings = new List<SyndicationItem>();
-            var feed = new SyndicationFeed("CoronaFeed", "Feed para centralização de notícias sobre o ", new Uri("https://github.com/luccasmf/CoronaFeed"), "RSSUrl", DateTime.Now);
-            feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year}");
+            var feed = new SyndicationFeed("CoronaFeed", "Feed para centralização de notícias sobre o Coronavirus", new Uri("https://github.com/luccasmf/CoronaFeed"), "RSSUrl", DateTime.Now);
+            feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year} - Public Domain");
 
             var items = new List<SyndicationItem>();
             var tasks = new List<Task>();
