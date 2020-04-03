@@ -27,12 +27,12 @@ namespace CoronaFeed.Controllers
             //_urls.Add(@"");
         }
 
-        [ResponseCache(Duration =5)]
+        [ResponseCache(Duration = 5)] //cache de meia hora antes de buscar denovo novas notícias
         [HttpGet]
         public IActionResult GetRSS()
         {
             _postings = new List<SyndicationItem>();
-            var feed = new SyndicationFeed("CoronaFeed", "Feed para centralização de notícias sobre o ", new Uri("https://github.com/luccasmf"), "RSSUrl", DateTime.Now);
+            var feed = new SyndicationFeed("CoronaFeed", "Feed para centralização de notícias sobre o ", new Uri("https://github.com/luccasmf/CoronaFeed"), "RSSUrl", DateTime.Now);
             feed.Copyright = new TextSyndicationContent($"{DateTime.Now.Year}");
 
             var items = new List<SyndicationItem>();
