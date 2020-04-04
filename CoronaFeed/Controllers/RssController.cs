@@ -72,6 +72,34 @@ namespace CoronaFeed.Controllers
             }
         }
 
+        [HttpGet("GetTracker")]
+        public async Task<string> Tracker()
+        {
+
+            try
+            {
+                var date = DateTime.Now;
+                var url = $"https://bnonews.com/index.php/{date.Year}/{date.Month.ToString("00")}/the-latest-coronavirus-cases/";
+                //var xpath = "//*[@id=\"0\"]/div/table/tbody";
+                var xpath = @"//iframe";
+                var client = new HttpClient();
+                var response = await client.GetAsync(url);
+                var pageContents = await response.Content.ReadAsStringAsync();
+
+                var pageDocument = new HtmlDocument();
+                pageDocument.LoadHtml(pageContents);
+
+                var tableCases = pageDocument.DocumentNode.SelectSingleNode(xpath).GetAttributeValue("src",String.Empty);
+                //Console.WriteLine(tableCases);
+                return tableCases;
+            }
+            catch(Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+
         //le os RSS
         private async void ReadRSS(string url)
         {
@@ -79,7 +107,7 @@ namespace CoronaFeed.Controllers
             {
                 var reader = XmlReader.Create(url);
                 var feed = SyndicationFeed.Load(reader);
-               
+
                 _postings.AddRange(feed.Items.Where(
                     x => x.Title.Text.HasKeywords() ||
                     x.Id.HasKeywords()));
@@ -89,28 +117,8 @@ namespace CoronaFeed.Controllers
             {
 
             }
-            
+
         }
 
-        [HttpGet("Tracker")]
-        public async Task<string> Tracker()
-        {
-            
-
-            var date = DateTime.Now;
-            var url = $"https://bnonews.com/index.php/{date.Year}/{date.Month.ToString("00")}/the-latest-coronavirus-cases/";
-            var xpath = "//*[@id=\"0\"]/div/table/tbody";
-
-            var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            var pageContents = await response.Content.ReadAsStringAsync();
-
-            var pageDocument = new HtmlDocument();
-            pageDocument.LoadHtml(pageContents);
-
-            var tableCases = pageDocument.DocumentNode.SelectSingleNode(xpath).InnerText;
-            //Console.WriteLine(tableCases);
-            return tableCases;
-        }
     }
 }
